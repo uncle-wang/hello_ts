@@ -76,6 +76,8 @@ player.pack.sortedCards.forEach(card => {
         <div class="face">${card.face}</div>
         <div class="color">${card.color}</div>
     `;
-    console.log(document.querySelector('.cards').appendChild);
-    // document.querySelector('.cards').appendChild($card);
+    const $list = document.querySelector('.cards');
+    if ($list) {
+        $list.appendChild($card);
+    }
 });
