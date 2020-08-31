@@ -1,12 +1,15 @@
+import $ from 'jquery';
 import {Face, Color, SuitLevel} from './types';
-import {FaceGroup, SuitInfo} from './interfaces';
+import {FaceGroup, SuitInfo, PlayerCard} from './interfaces';
+import control from './control';
 
 // 牌
 export class Card {
     readonly face: Face;
     readonly color: Color;
+    selected: boolean = false;
     get faceName(): string {
-        const faceNames: Array<string> = ['3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A', '2', 'BlackJoker', 'RedJoker'];
+        const faceNames: Array<string> = ['3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A', '2', 'BJ', 'RJ'];
         return faceNames[this.face];
     }
     get colorName(): string {
@@ -69,7 +72,6 @@ export class Suit {
     readonly cards: Array<Card>;
     // constructor
     constructor(cards: Array<Card>) {
-        if (cards.length <= 0) throw new Error('invalid cards');
         this.cards = cards.sort((a, b) => a.face - b.face);
     }
     // 根据Face大小分组
@@ -117,7 +119,7 @@ export class Suit {
                 return {level, signature: `AA${this.faceGroups.length}`, face: this.faceGroups[0].face};
             }
             // AAAAB[B]
-            if (this.faceGroups[0].num === 4) {
+            if (this.faceGroups[0] && this.faceGroups[0].num === 4) {
                 if (this.cards.length === 6) return {
                     level,
                     signature: 'AAAAB',
@@ -185,6 +187,10 @@ export class Suit {
     get signature(): string {
         return this.suitInfo.signature;
     }
+    // 是否合法
+    get valid(): boolean {
+        return this.level !== SuitLevel.None;
+    }
     // 比较大小
     biggerThan(suit: Suit): boolean {
         if (this.level > suit.level) return true;
@@ -195,7 +201,7 @@ export class Suit {
 
 // 牌包
 export class Pack {
-    readonly cards: Array<Card>;
+    protected cards: Array<Card>;
     get sortedCards(): Array<Card> {
         const cards: Array<Card> = [];
         this.cards.forEach(c => {
@@ -206,6 +212,9 @@ export class Pack {
             if (faceDiff === 0) return a.color - b.color;
             return faceDiff;
         });
+    }
+    get length(): number {
+        return this.cards.length;
     }
     constructor(cards: Array<Card>) {
         this.cards = cards;
@@ -219,12 +228,42 @@ export class Pack {
     push(card: Card): void {
         this.cards.push(card);
     }
+    setCards(cards: Array<Card>): void {
+        this.cards = cards;
+    }
 }
 
 // player
-export class Player {
-    pack: Pack;
-    constructor() {
-        this.pack = new Pack([]);
+export class Player extends Pack {
+    $list: any;
+    get selectedCards(): Array<Card> {
+        return this.cards.filter(c => c.selected === true);
+    }
+    get suit(): Suit {
+        const suit: Suit = new Suit(this.selectedCards);
+        return suit;
+    }
+    constructor($list: any) {
+        super([]);
+        this.$list = $list;
+        this.$list.data('player', this);
+    }
+    popSelected(): void {
+        this.cards = this.cards.filter(c => !this.selectedCards.includes(c));
+    }
+    drawCards(): void {
+        this.$list.empty();
+        for (let i = 0; i < this.sortedCards.length; i ++) {
+            const card = this.sortedCards[i];
+            const $card = $(`
+                <li class="card">
+                    <div class="face">${card.faceName}</div>
+                    <div class="color">${card.colorName}</div>
+                </li>
+            `);
+            $card.data('card', card);
+            if (card.selected) $card.addClass('selected');
+            this.$list.append($card);
+        }
     }
 }

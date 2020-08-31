@@ -1,4 +1,5 @@
 import {Face, SuitLevel} from './types';
+import {Card} from './classes';
 
 export interface FaceGroup {
     face: Face;
@@ -20,4 +21,9 @@ export interface SuitInfo {
     signature: string;
     level: SuitLevel;
     face: Face;
+}
+
+export interface PlayerCard {
+    selected: boolean;
+    card: Card;
 }

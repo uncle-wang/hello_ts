@@ -1,16 +1,82 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
     <title>TS</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        .panel {
+            padding-bottom: 20px;
+        }
+        ul.cards {
+            list-style-type: none;
+            display: flex;
+            justify-content: center;
+            height: 38px;
+        }
+        ul.cards + ul.cards {
+            margin-top: 20px;
+        }
+        ul.cards.current {
+            border: 3px solid orange;
+        }
+        li.card {
+            font-size: 12px;
+            padding: 4px;
+            width: 15px;
+            border: 1px solid #000;
+            border-radius: 3px;
+            background-color: #fff;
+            word-wrap: break-word;
+        }
+        .players li.card.selected {
+            position: relative;
+            top: -12px;
+        }
+        .btns {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .btn {
+            width: 64px;
+            height: 32px;
+            border: none;
+            color: #fff;
+            border-radius: 3px;
+            font-weight: bold;
+            outline: none;
+            margin: 0 20px;
+        }
+        #submit {
+            background-color: orange;
+        }
+        #pass {
+            background-color: green;
+        }
+        #submit[disabled], #pass[disabled] {
+            background-color: gray;
+        }
+    </style>
 </head>
 <body>
     <div id="main">
-        <ul class="cards">
-            <li class="card">
-                <div class="face">2</div>
-                <div class="color">♥️</div>
-            </li>
-        </ul>
+        <div class="panel">
+            <ul class="cards"></ul>
+        </div>
+        <div class="players">
+            <ul class="cards current"></ul>
+            <ul class="cards"></ul>
+            <ul class="cards"></ul>
+        </div>
+        <div class="btns">
+            <button type="button" id="submit" class="btn" disabled="disabled">OK</button>
+            <button type="button" id="pass" class="btn" disabled="disabled">PASS</button>
+        </div>
     </div>
 </body>
 </html>
